@@ -23,14 +23,10 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.julia-ref }}
 
       - name: Build Julia
-        # if: steps.cache-julia.outputs.cache-hit != 'true'
+        if: steps.cache-julia.outputs.cache-hit != 'true'
         uses: ./
         with:
           ref: ${{ matrix.julia-ref }}
-
-      - name: Debugging
-        run: |
-          ls -la ~
 
       - name: Show versioninfo()
         run: ~/julia/julia -e "using InteractiveUtils; versioninfo()"
