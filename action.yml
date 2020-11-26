@@ -1,0 +1,38 @@
+name: Build Julia
+description: Build Julia from source for a given commit.
+author: Sascha Mann
+
+branding:
+  icon: cpu
+  color: purple
+
+inputs:
+  ref:
+    description: Value passed to git checkout.
+    default: master
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Clone Julia
+      run: git clone https://github.com/JuliaLang/julia.git
+      shell: bash
+    
+    - name: Checkout ref
+      run: |
+        cd julia
+        git checkout ${{ inputs.ref }}
+      shell: bash
+
+    - name: Build Julia
+      run: |
+        cd julia
+        make -j 2
+      shell: bash
+    
+    - name: Print Version
+      run: |
+        cd julia
+        ./julia --version
+      shell: bash

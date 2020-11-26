@@ -1,0 +1,19 @@
+name: Example builds
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Julia
+        id: build-julia
+        uses: ./
+        with:
+          ref: v1.5.3
+
+      - name: Show versioninfo()
+        run: ./julia/julia -e "using InteractiveUtils; versioninfo()"
