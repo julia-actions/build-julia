@@ -13,18 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache
-        id: cache-julia
-        uses: actions/cache@v2
-        with:
-          path: ~/julia
-          # Note that this cache key will not work with branches
-          # because there could be new commits after the cache has been created
-          key: ${{ runner.os }}-${{ matrix.julia-ref }}
-
       - name: Build Julia
-        if: steps.cache-julia.outputs.cache-hit != 'true'
-        uses: ./ # replace this with julia-actions/build-julia@v1 in your workflows
+        uses: ./
         with:
           ref: ${{ matrix.julia-ref }}
 
