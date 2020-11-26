@@ -39,11 +39,16 @@ jobs:
       - name: Show versioninfo()
         run: ~/julia/julia -e "using InteractiveUtils; versioninfo()"
 
+        # Uploading the directory directly as artifact is extremely slow.
+        # The process is much faster if the directory is archived and compressed first.
+      - name: Create archive to be uploaded as artifact
+        run: tar --zstd -cf julia.tar.zst ~/julia
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: julia-${{ matrix.julia-ref }}
-          path: ~/julia
+          path: ~/julia.tar.zst
 
   build2:
     runs-on: ubuntu-20.04
@@ -77,14 +82,16 @@ jobs:
       - name: Show versioninfo()
         run: ~/julia/julia -e "using InteractiveUtils; versioninfo()"
 
+        # Uploading the directory directly as artifact is extremely slow.
+        # The process is much faster if the directory is archived and compressed first.
+      - name: Create archive to be uploaded as artifact
+        run: tar --zstd -cf julia.tar.zst ~/julia
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: julia-${{ matrix.julia-ref }}
-          path: ~/julia
-
-      - name: Set ref output for dependent jobs
-        run: echo "::set-output name=ref::${{ matrix.julia-ref }}"
+          path: ~/julia.tar.zst
 
   ci:
     runs-on: ubuntu-20.04
@@ -97,13 +104,19 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: julia-${{ needs.build1.outputs.ref }}
-          path: ~/julia-${{ needs.build1.outputs.ref }}
+          path: ~/julia-${{ needs.build1.outputs.ref }}.tar.zst
+      
+      - name: Extract Julia ${{ needs.build1.outputs.ref }}
+        run: tar --zstd -xf ~/julia-${{ needs.build1.outputs.ref }}.tar.zst --strip-components=1 -C ~/julia-${{ needs.build1.outputs.ref }}
 
       - name: Download Julia ${{ needs.build2.outputs.ref }}
         uses: actions/download-artifact@v2
         with:
           name: julia-${{ needs.build2.outputs.ref }}
-          path: ~/julia-${{ needs.build2.outputs.ref }}
+          path: ~/julia-${{ needs.build2.outputs.ref }}.tar.zst
+      
+      - name: Extract Julia ${{ needs.build2.outputs.ref }}
+        run: tar --zstd -xf ~/julia-${{ needs.build2.outputs.ref }}.tar.zst --strip-components=1 -C ~/julia-${{ needs.build1.outputs.ref }}
 
       - name: Show versioninfo()
         run: |
