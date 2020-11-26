@@ -56,7 +56,4 @@ jobs:
           #
           # Default: $HOME/julia
           target-dir: ''
-
-      - name: Show versioninfo()
-        run: ~/julia/julia -e "using InteractiveUtils; versioninfo()"
 ```
