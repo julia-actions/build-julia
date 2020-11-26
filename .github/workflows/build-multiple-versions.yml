@@ -4,8 +4,8 @@ on: [push, pull_request, workflow_dispatch]
 
 # Define environment variables as shortcuts for both refs
 env:
-  JULIA_REF1: '1.5.3'
-  JULIA_REF2: '1.5.1'
+  JULIA_REF1: 'v1.5.3'
+  JULIA_REF2: 'v1.5.1'
 
 jobs:
   test:
