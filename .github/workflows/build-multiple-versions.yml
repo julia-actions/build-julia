@@ -2,12 +2,6 @@ name: Build multiple versions of Julia within one environment
 
 on: [push, pull_request, workflow_dispatch]
 
-# Define environment variables as shortcuts for both refs.
-# This is not strictly needed but it makes the workflows easier to edit and copy.
-env:
-  REF1: "v1.5.3"
-  REF2: "v1.5.1"
-
 # Build two versions of Julia in parallel and upload them as Job artifacts.
 # This allows reusing the same cache across all builds while extracting it to different target directories.
 # It also speeds up the build by not building all versions in series.
