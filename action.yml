@@ -11,12 +11,16 @@ inputs:
     description: Value passed to git checkout.
     default: master
     required: false
+  source-repo:
+    description: Value passed to git clone.
+    default: https://github.com/JuliaLang/julia.git
+    required: false
 
 runs:
   using: composite
   steps:
     - name: Clone Julia
-      run: git clone https://github.com/JuliaLang/julia.git "$HOME/julia"
+      run: git clone ${{ inputs.source-repo }} "$HOME/julia"
       shell: bash
     
     - name: Checkout ref
