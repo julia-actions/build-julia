@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Julia
         if: steps.cache-julia.outputs.cache-hit != 'true'
-        uses: ./
+        uses: ./ # replace this with julia-actions/build-julia@v1 in your workflows
         with:
           ref: ${{ matrix.julia-ref }}
 
