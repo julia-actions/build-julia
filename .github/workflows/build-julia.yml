@@ -5,15 +5,32 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   test:
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: true
+      matrix:
+        julia-ref: [v1.5.3]
 
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache
+        id: cache-julia
+        uses: actions/cache@v2
+        with:
+          path: ~/julia
+          # Note that this cache key will not work with branches
+          # because there could be new commits after the cache has been created
+          key: ${{ runner.os }}-${{ matrix.julia-ref }}
+
       - name: Build Julia
-        id: build-julia
+        # if: steps.cache-julia.outputs.cache-hit != 'true'
         uses: ./
         with:
-          ref: v1.5.3
+          ref: ${{ matrix.julia-ref }}
+
+      - name: Debugging
+        run: |
+          ls -la ~
 
       - name: Show versioninfo()
-        run: ./julia/julia -e "using InteractiveUtils; versioninfo()"
+        run: ~/julia/julia -e "using InteractiveUtils; versioninfo()"

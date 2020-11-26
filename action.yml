@@ -16,23 +16,23 @@ runs:
   using: composite
   steps:
     - name: Clone Julia
-      run: git clone https://github.com/JuliaLang/julia.git
+      run: git clone https://github.com/JuliaLang/julia.git "$HOME/julia"
       shell: bash
     
     - name: Checkout ref
       run: |
-        cd julia
+        cd "$HOME/julia"
         git checkout ${{ inputs.ref }}
       shell: bash
 
     - name: Build Julia
       run: |
-        cd julia
+        cd "$HOME/julia"
         make -j 2
       shell: bash
     
     - name: Print Version
       run: |
-        cd julia
+        cd "$HOME/julia"
         ./julia --version
       shell: bash
