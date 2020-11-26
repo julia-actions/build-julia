@@ -15,28 +15,32 @@ inputs:
     description: Value passed to git clone.
     default: https://github.com/JuliaLang/julia.git
     required: false
+  target-dir:
+    description: Directory that Julia will be installed in
+    default: $HOME/julia
+    required: false
 
 runs:
   using: composite
   steps:
     - name: Clone Julia
-      run: git clone ${{ inputs.source-repo }} "$HOME/julia"
+      run: git clone ${{ inputs.source-repo }} "${{ inputs.target-dir }}"
       shell: bash
     
     - name: Checkout ref
       run: |
-        cd "$HOME/julia"
+        cd "${{ inputs.target-dir }}"
         git checkout ${{ inputs.ref }}
       shell: bash
 
     - name: Build Julia
       run: |
-        cd "$HOME/julia"
+        cd "${{ inputs.target-dir }}"
         make -j 2
       shell: bash
     
     - name: Print Version
       run: |
-        cd "$HOME/julia"
+        cd "${{ inputs.target-dir }}"
         ./julia --version
       shell: bash
