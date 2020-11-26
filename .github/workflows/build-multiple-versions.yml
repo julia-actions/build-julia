@@ -1,0 +1,48 @@
+name: Build multiple versions of Julia within one environment
+
+on: [push, pull_request, workflow_dispatch]
+
+# Define environment variables as shortcuts for both refs
+env:
+  JULIA_REF1: '1.5.3'
+  JULIA_REF2: '1.5.1'
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache
+        id: cache-julia1
+        uses: actions/cache@v2
+        with:
+          path: ~/julia
+          key: ${{ runner.os }}-${{ env.JULIA_REF1 }}
+
+      - name: Build Julia
+        if: steps.cache-julia1.outputs.cache-hit != 'true'
+        uses: ./
+        with:
+          ref: "${{ env.JULIA_REF1 }}"
+
+      - name: Cache
+        id: cache-julia2
+        uses: actions/cache@v2
+        with:
+          path: ~/julia-${{ env.JULIA_REF2 }}
+          # Note that the target dir is part of the cache key to ensure a correct hit
+          key: ${{ runner.os }}-${{ env.JULIA_REF2 }}-HOME-julia-${{ env.JULIA_REF2 }}
+
+      - name: Build Julia
+        if: steps.cache-julia2.outputs.cache-hit != 'true'
+        uses: ./
+        with:
+          ref: "${{ env.JULIA_REF2 }}"
+          target-dir: $HOME/julia-${{ env.JULIA_REF2 }}
+
+      - name: Show versioninfo()
+        run: |
+          ~/julia/julia -e "using InteractiveUtils; versioninfo()"
+          ~/julia-${{ env.JULIA_REF1 }}/julia -e "using InteractiveUtils; versioninfo()"
