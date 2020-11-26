@@ -15,10 +15,14 @@ env:
 jobs:
   build1:
     runs-on: ubuntu-20.04
+
     strategy:
       fail-fast: true
       matrix:
-        julia-ref: ["${{ env.REF1 }}"]
+        julia-ref: [v1.5.3]
+
+    outputs:
+      ref: ${{ matrix.julia-ref }}
 
     steps:
       - uses: actions/checkout@v2
@@ -49,10 +53,14 @@ jobs:
 
   build2:
     runs-on: ubuntu-20.04
+
     strategy:
       fail-fast: true
       matrix:
-        julia-ref: ["${{ env.REF2 }}"]
+        julia-ref: [v1.5.1]
+
+    outputs:
+      ref: ${{ matrix.julia-ref }}
 
     steps:
       - uses: actions/checkout@v2
@@ -81,6 +89,9 @@ jobs:
           name: julia-${{ matrix.julia-ref }}
           path: ~/julia
 
+      - name: Set ref output for dependent jobs
+        run: echo "::set-output name=ref::${{ matrix.julia-ref }}"
+
   ci:
     runs-on: ubuntu-20.04
 
@@ -88,19 +99,19 @@ jobs:
     needs: [build1, build2]
 
     steps:
-      - name: Download Julia ${{ env.REF1 }}
+      - name: Download Julia ${{ needs.build1.outputs.ref }}
         uses: actions/download-artifact@v2
         with:
-          name: julia-${{ env.REF1 }}
-          path: ~/julia-${{ env.REF1 }}
+          name: julia-${{ needs.build1.outputs.ref }}
+          path: ~/julia-${{ needs.build1.outputs.ref }}
 
-      - name: Download Julia ${{ env.REF2 }}
+      - name: Download Julia ${{ needs.build2.outputs.ref }}
         uses: actions/download-artifact@v2
         with:
-          name: julia-${{ env.REF2 }}
-          path: ~/julia-${{ env.REF2 }}
-      
+          name: julia-${{ needs.build2.outputs.ref }}
+          path: ~/julia-${{ needs.build2.outputs.ref }}
+
       - name: Show versioninfo()
         run: |
-          ~/julia-${{ env.REF1 }}/julia -e "using InteractiveUtils; versioninfo()"
-          ~/julia-${{ env.REF2 }}/julia -e "using InteractiveUtils; versioninfo()"
+          ~/julia-${{ needs.build1.outputs.ref }}/julia -e "using InteractiveUtils; versioninfo()"
+          ~/julia-${{ needs.build2.outputs.ref }}/julia -e "using InteractiveUtils; versioninfo()"
