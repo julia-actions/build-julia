@@ -46,7 +46,7 @@ jobs:
         run: ~/julia/julia -e "using InteractiveUtils; versioninfo()"
 
       - name: Upload artifact
-        run: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
           name: julia-${{ matrix.julia-ref }}
           path: ~/julia
@@ -84,7 +84,7 @@ jobs:
         run: ~/julia/julia -e "using InteractiveUtils; versioninfo()"
 
       - name: Upload artifact
-        run: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
           name: julia-${{ matrix.julia-ref }}
           path: ~/julia
