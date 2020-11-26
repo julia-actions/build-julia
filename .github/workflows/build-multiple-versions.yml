@@ -42,7 +42,9 @@ jobs:
         # Uploading the directory directly as artifact is extremely slow.
         # The process is much faster if the directory is archived and compressed first.
       - name: Create archive to be uploaded as artifact
-        run: tar --zstd -cf julia.tar.zst ~/julia
+        run: |
+          cd "$HOME"
+          tar --zstd -cf julia.tar.zst julia/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -85,7 +87,9 @@ jobs:
         # Uploading the directory directly as artifact is extremely slow.
         # The process is much faster if the directory is archived and compressed first.
       - name: Create archive to be uploaded as artifact
-        run: tar --zstd -cf julia.tar.zst ~/julia
+        run: |
+          cd "$HOME"
+          tar --zstd -cf julia.tar.zst julia/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
